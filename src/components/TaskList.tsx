@@ -1,4 +1,5 @@
 import type { Task } from "@/lib/taskTypes";
+import Link from "next/link";
 
 type TaskListProps = {
   tasks: Task[];
@@ -30,7 +31,9 @@ export function TaskList({ tasks }: TaskListProps) {
             <h3>{task.title}</h3>
 
             <p>{task.description || "No description"}</p>
-
+            <Link href={`/tasks/${task.id}/edit`}>
+  Edit task
+</Link>
             <dl>
               <div>
                 <dt>Topic</dt>

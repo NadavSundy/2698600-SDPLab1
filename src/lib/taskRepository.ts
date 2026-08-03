@@ -5,6 +5,7 @@ import type {
   CreateTaskInput,
   Task,
   TaskStatus,
+  UpdateTaskInput,
 } from "@/lib/taskTypes";
 
 type TaskRow = {
@@ -90,4 +91,61 @@ export function getActiveTasks(
     .all() as TaskRow[];
 
   return rows.map(mapTaskRow);
+}
+
+export function getTaskById(
+  id: number,
+  database: Database.Database = db,
+): Task | null {
+  const row = database
+    .prepare(
+      `
+        SELECT *
+        FROM tasks
+        WHERE id = ?
+      `,
+    )
+    .get(id) as TaskRow | undefined;
+
+  return row ? mapTaskRow(row) : null;
+}
+
+export function updateTask(
+  input: UpdateTaskInput,
+  database: Database.Database = db,
+): Task {
+  const result = database
+    .prepare(
+      `
+        UPDATE tasks
+        SET
+          title = @title,
+          description = @description,
+          due_date = @dueDate,
+          topic = @topic,
+          status = @status,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = @id
+      `,
+    )
+    .run({
+      id: input.id,
+      title: input.title.trim(),
+      description: input.description.trim(),
+      dueDate: input.dueDate,
+      topic: input.topic.trim(),
+      status: input.status,
+    });
+
+  if (result.changes === 0) {
+    throw new Error("Task not found.");
+  }
+
+  const updatedTask = getTaskById(input.id, database);
+
+  if (!updatedTask) {
+    throw new Error("Updated task could not be loaded.");
+  }
+
+  return updatedTask;
 }
