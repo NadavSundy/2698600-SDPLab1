@@ -1,24 +1,17 @@
-import { db } from "@/lib/db";
-
-type TaskCountResult = {
-  count: number;
-};
+import { TaskForm } from "@/components/TaskForm";
+import { TaskList } from "@/components/TaskList";
+import { getActiveTasks } from "@/lib/taskRepository";
 
 export default function Home() {
-  const result = db
-    .prepare(
-      `
-        SELECT COUNT(*) AS count
-        FROM tasks
-        WHERE archived_at IS NULL
-      `,
-    )
-    .get() as TaskCountResult;
+  const tasks = getActiveTasks();
 
   return (
     <main>
       <h1>Todo Application</h1>
-      <p>Active tasks: {result.count}</p>
+
+      <TaskForm />
+
+      <TaskList tasks={tasks} />
     </main>
   );
 }
