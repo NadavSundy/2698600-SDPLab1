@@ -34,3 +34,13 @@ export type UpdateTaskInput = {
   topic: string;
   status: TaskStatus;
 };
+
+export const TASK_SORT_OPTIONS = [
+  "created",
+  "topic",
+  "status",
+  "dueDate",
+] as const;
+
+export type TaskSortOption =
+  (typeof TASK_SORT_OPTIONS)[number];

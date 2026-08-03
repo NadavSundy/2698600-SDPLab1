@@ -1,10 +1,9 @@
 import Link from "next/link";
 
 import { getArchivedTasks } from "@/lib/taskRepository";
+import type { Task } from "@/lib/taskTypes";
 
-function formatStatus(
-  status: "TODO" | "IN_PROGRESS" | "COMPLETE",
-): string {
+function formatStatus(status: Task["status"]): string {
   switch (status) {
     case "TODO":
       return "Todo";
@@ -53,9 +52,7 @@ export default function ArchivedTasksPage() {
                 </div>
               </dl>
 
-              <p>
-                Archived: {task.archivedAt}
-              </p>
+              <p>Archived: {task.archivedAt}</p>
             </li>
           ))}
         </ul>

@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import type {
   CreateTaskInput,
   Task,
+  TaskSortOption,
   TaskStatus,
   UpdateTaskInput,
 } from "@/lib/taskTypes";
@@ -77,15 +78,30 @@ export function createTask(
 }
 
 export function getActiveTasks(
+  sort: TaskSortOption = "created",
   database: Database.Database = db,
 ): Task[] {
+  const orderBy: Record<TaskSortOption, string> = {
+    created: "created_at DESC, id DESC",
+    topic: "topic COLLATE NOCASE ASC, id DESC",
+    status: `
+      CASE status
+        WHEN 'TODO' THEN 1
+        WHEN 'IN_PROGRESS' THEN 2
+        WHEN 'COMPLETE' THEN 3
+      END ASC,
+      id DESC
+    `,
+    dueDate: "due_date ASC, id DESC",
+  };
+
   const rows = database
     .prepare(
       `
         SELECT *
         FROM tasks
         WHERE archived_at IS NULL
-        ORDER BY created_at DESC, id DESC
+        ORDER BY ${orderBy[sort]}
       `,
     )
     .all() as TaskRow[];

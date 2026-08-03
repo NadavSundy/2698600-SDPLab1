@@ -1,6 +1,8 @@
-import type { Task } from "@/lib/taskTypes";
 import Link from "next/link";
+
 import { archiveTaskAction } from "@/app/actions";
+import { isTaskOverdue } from "@/lib/taskRules";
+import type { Task } from "@/lib/taskTypes";
 
 type TaskListProps = {
   tasks: Task[];
@@ -27,36 +29,63 @@ export function TaskList({ tasks }: TaskListProps) {
       <h2>Active tasks</h2>
 
       <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <h3>{task.title}</h3>
+        {tasks.map((task) => {
+          const overdue = isTaskOverdue(task);
 
-            <p>{task.description || "No description"}</p>
-            <Link href={`/tasks/${task.id}/edit`}>
-  Edit task
-</Link>
-<form action={archiveTaskAction}>
-  <input type="hidden" name="id" value={task.id} />
-  <button type="submit">Archive task</button>
-</form>
-            <dl>
-              <div>
-                <dt>Topic</dt>
-                <dd>{task.topic}</dd>
+          return (
+            <li
+              key={task.id}
+              className={overdue ? "task-overdue" : undefined}
+            >
+              <div className="task-heading">
+                <h3>{task.title}</h3>
+
+                {overdue && (
+                  <span className="overdue-label">
+                    Overdue
+                  </span>
+                )}
               </div>
 
-              <div>
-                <dt>Status</dt>
-                <dd>{formatStatus(task.status)}</dd>
-              </div>
+              <p>{task.description || "No description"}</p>
 
-              <div>
-                <dt>Due date</dt>
-                <dd>{task.dueDate}</dd>
+              <dl>
+                <div>
+                  <dt>Topic</dt>
+                  <dd>{task.topic}</dd>
+                </div>
+
+                <div>
+                  <dt>Status</dt>
+                  <dd>{formatStatus(task.status)}</dd>
+                </div>
+
+                <div>
+                  <dt>Due date</dt>
+                  <dd>{task.dueDate}</dd>
+                </div>
+              </dl>
+
+              <div className="task-actions">
+                <Link href={`/tasks/${task.id}/edit`}>
+                  Edit task
+                </Link>
+
+                <form action={archiveTaskAction}>
+                  <input
+                    type="hidden"
+                    name="id"
+                    value={task.id}
+                  />
+
+                  <button type="submit">
+                    Archive task
+                  </button>
+                </form>
               </div>
-            </dl>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

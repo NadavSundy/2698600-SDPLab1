@@ -1,100 +1,54 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
-import { updateTaskAction } from "@/app/actions";
-import { getTaskById } from "@/lib/taskRepository";
+import { TaskForm } from "@/components/TaskForm";
+import { TaskList } from "@/components/TaskList";
+import { TaskSort } from "@/components/TaskSort";
+import { getActiveTasks } from "@/lib/taskRepository";
+import {
+  TASK_SORT_OPTIONS,
+  type TaskSortOption,
+} from "@/lib/taskTypes";
 
-type EditTaskPageProps = {
-  params: Promise<{
-    id: string;
+type HomePageProps = {
+  searchParams: Promise<{
+    sort?: string;
   }>;
 };
 
-export default async function EditTaskPage({
-  params,
-}: EditTaskPageProps) {
-  const { id } = await params;
-  const taskId = Number(id);
+function isTaskSortOption(
+  value: string | undefined,
+): value is TaskSortOption {
+  return (
+    value !== undefined &&
+    TASK_SORT_OPTIONS.includes(value as TaskSortOption)
+  );
+}
 
-  if (!Number.isInteger(taskId) || taskId <= 0) {
-    notFound();
-  }
+export default async function Home({
+  searchParams,
+}: HomePageProps) {
+  const { sort } = await searchParams;
 
-  const task = getTaskById(taskId);
+  const selectedSort: TaskSortOption =
+    isTaskSortOption(sort) ? sort : "created";
 
-  if (!task) {
-    notFound();
-  }
+  const tasks = getActiveTasks(selectedSort);
 
   return (
     <main>
-      <h1>Edit task</h1>
-
-      <form className="task-form" action={updateTaskAction}>
-        <input type="hidden" name="id" value={task.id} />
-
-        <div>
-          <label htmlFor="title">Title</label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            defaultValue={task.title}
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            rows={4}
-            defaultValue={task.description}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="dueDate">Due date</label>
-          <input
-            id="dueDate"
-            name="dueDate"
-            type="date"
-            defaultValue={task.dueDate}
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="topic">Topic</label>
-          <input
-            id="topic"
-            name="topic"
-            type="text"
-            defaultValue={task.topic}
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="status">Status</label>
-          <select
-            id="status"
-            name="status"
-            defaultValue={task.status}
-          >
-            <option value="TODO">Todo</option>
-            <option value="IN_PROGRESS">In-Progress</option>
-            <option value="COMPLETE">Complete</option>
-          </select>
-        </div>
-
-        <button type="submit">Save changes</button>
-      </form>
+      <h1>Todo Application</h1>
 
       <p>
-        <Link href="/">Back to tasks</Link>
+        <Link href="/archived">
+          View archived tasks
+        </Link>
       </p>
+
+      <TaskForm />
+
+      <TaskSort selectedSort={selectedSort} />
+
+      <TaskList tasks={tasks} />
     </main>
   );
 }
