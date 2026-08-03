@@ -138,7 +138,7 @@ This repository makes use of AI code review using the following tools:
 The full assessment transcript is included in:
 
 ```text
-docs/transcripts/chatgpt-lab-one-transcript.pdf
+docs/transcripts/chatgpt-lab-one-transcript.md
 ```
 
 ## AI Declaration
