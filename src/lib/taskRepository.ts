@@ -149,3 +149,50 @@ export function updateTask(
 
   return updatedTask;
 }
+
+export function archiveTask(
+  id: number,
+  database: Database.Database = db,
+): Task {
+  const result = database
+    .prepare(
+      `
+        UPDATE tasks
+        SET
+          archived_at = CURRENT_TIMESTAMP,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+          AND archived_at IS NULL
+      `,
+    )
+    .run(id);
+
+  if (result.changes === 0) {
+    throw new Error("Active task not found.");
+  }
+
+  const archivedTask = getTaskById(id, database);
+
+  if (!archivedTask) {
+    throw new Error("Archived task could not be loaded.");
+  }
+
+  return archivedTask;
+}
+
+export function getArchivedTasks(
+  database: Database.Database = db,
+): Task[] {
+  const rows = database
+    .prepare(
+      `
+        SELECT *
+        FROM tasks
+        WHERE archived_at IS NOT NULL
+        ORDER BY archived_at DESC, id DESC
+      `,
+    )
+    .all() as TaskRow[];
+
+  return rows.map(mapTaskRow);
+}

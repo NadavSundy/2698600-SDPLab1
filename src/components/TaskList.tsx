@@ -1,5 +1,6 @@
 import type { Task } from "@/lib/taskTypes";
 import Link from "next/link";
+import { archiveTaskAction } from "@/app/actions";
 
 type TaskListProps = {
   tasks: Task[];
@@ -34,6 +35,10 @@ export function TaskList({ tasks }: TaskListProps) {
             <Link href={`/tasks/${task.id}/edit`}>
   Edit task
 </Link>
+<form action={archiveTaskAction}>
+  <input type="hidden" name="id" value={task.id} />
+  <button type="submit">Archive task</button>
+</form>
             <dl>
               <div>
                 <dt>Topic</dt>

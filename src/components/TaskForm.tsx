@@ -2,7 +2,7 @@ import { createTaskAction } from "@/app/actions";
 
 export function TaskForm() {
   return (
-    <form action={createTaskAction}>
+    <form className="task-form" action={createTaskAction}>
       <h2>Create a task</h2>
 
       <div>

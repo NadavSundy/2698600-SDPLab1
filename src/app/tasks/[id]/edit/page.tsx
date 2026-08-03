@@ -30,7 +30,7 @@ export default async function EditTaskPage({
     <main>
       <h1>Edit task</h1>
 
-      <form action={updateTaskAction}>
+      <form className="task-form" action={updateTaskAction}>
         <input type="hidden" name="id" value={task.id} />
 
         <div>
@@ -92,7 +92,9 @@ export default async function EditTaskPage({
         <button type="submit">Save changes</button>
       </form>
 
-      <Link href="/">Back to tasks</Link>
+      <p>
+        <Link href="/">Back to tasks</Link>
+      </p>
     </main>
   );
 }

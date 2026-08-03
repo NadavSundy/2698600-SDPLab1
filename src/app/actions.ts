@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
+  archiveTask,
   createTask as insertTask,
   updateTask as saveTaskChanges,
 } from "@/lib/taskRepository";
@@ -98,4 +99,19 @@ export async function updateTaskAction(
 
   revalidatePath("/");
   redirect("/");
+}
+
+export async function archiveTaskAction(
+  formData: FormData,
+): Promise<void> {
+  const id = Number(formData.get("id"));
+
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Invalid task ID.");
+  }
+
+  archiveTask(id);
+
+  revalidatePath("/");
+  revalidatePath("/archived");
 }
