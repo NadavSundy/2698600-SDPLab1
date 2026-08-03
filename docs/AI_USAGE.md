@@ -72,7 +72,7 @@ Assisted-by: ChatGPT-Web[GPT-5.6 Thinking]
 The full assessment conversation should be saved without editing at:
 
 ```text
-docs/transcripts/chatgpt-lab-one-transcript.pdf
+docs/transcripts/chatgpt-lab-one-transcript.md
 ```
 
 This transcript should include the planning, code generation, debugging, corrections, and final verification steps.
